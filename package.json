@@ -1,9 +1,12 @@
 {
-  "name": "react-localization",
-  "version": "1.0.0",
+  "name": "react-localization-advanced",
+  "version": "0.0.1",
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "cli": "ts-node index.ts",
     "build": "tsc"
