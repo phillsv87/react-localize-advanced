@@ -1,0 +1,19 @@
+{
+  "name": "@iyio/react-localization",
+  "version": "0.0.3",
+  "description": "Tools for localizing React apps",
+  "main": "dist/localization.js",
+  "types": "dist/localization.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.4.4"
+  }
+}

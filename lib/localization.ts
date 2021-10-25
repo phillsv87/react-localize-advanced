@@ -1,36 +1,56 @@
-type StringMap ={}
-
 export type DataArgs<
     T extends string|number|symbol,
-    TId extends keyof StringMap
->=T extends keyof StringMap[TId] ? StringMap[TId][T] extends null?[]: [StringMap[TId][T]] : [];
+    TSM extends TypeStringMap,
+    TId extends keyof TSM
+>=T extends keyof TSM[TId] ? TSM[TId][T] extends null?[]: [TSM[TId][T]] : [];
 
-export type StringsCall<T,TId extends keyof StringMap>=(key:keyof T, ...data:DataArgs<keyof T,TId>)=>string
+export type StringsCall<
+    T,
+    TSM extends TypeStringMap,
+    TId extends keyof TSM
+>=(key:keyof T, ...data:DataArgs<keyof T,TSM,TId>)=>string
 
-export type KeyOrKeyAndData<T,TId extends keyof StringMap>=T extends keyof StringMap[TId] ?
-    StringMap[TId][T] extends null ? T : [T,StringMap[TId][T]] : T;
+export type KeyOrKeyAndData<
+    T,
+    TSM extends TypeStringMap,
+    TId extends keyof TSM
+>=T extends keyof TSM[TId] ?
+    TSM[TId][T] extends null ? T : [T,TSM[TId][T]] : T;
 
 
-export interface LocalCompProps<T,TId extends keyof StringMap>
+export interface LocalCompProps<
+    T,
+    TSM extends TypeStringMap,
+    TId extends keyof TSM
+>
 {
-    strings?:StringsCall<T,TId>;
-    sk?:KeyOrKeyAndData<keyof T,TId>;
+    strings?:StringsCall<T,TSM,TId>;
+    sk?:KeyOrKeyAndData<keyof T,TSM,TId>;
 }
 export interface MadeStrings<
-    T extends {[key:string]:string},
-    TId extends keyof StringMap
+    TSM extends TypeStringMap,
+    TId extends keyof TSM
 >{
-    strings:StringsCall<T,TId>;
+    strings:StringsCall<TSM,TSM,TId>;
     // Text:(props:LocalTextProps<T,TId>)=>any;
     // Button:(props:LocalButtonProps<T,TId>)=>any;
 }
 
 const varsReg=/([^{]|^){([a-z0-9_:]+)\}/gi
 
+export type LocalStringMap={[name:string]:string}
+
+export type TypeStringMap={
+    [id:string]:{
+        [name:string]:any;
+    }
+}
+
 export function makeStrings<
-    T extends {[key:string]:string},
-    TId extends keyof StringMap,
->(id:TId,obj:T):MadeStrings<T,TId>{
+    T extends LocalStringMap,
+    TSM extends TypeStringMap,
+    TId extends keyof TSM
+>(id:TId,obj:T):MadeStrings<TSM,TId>{
     const strings=(key:keyof T,data:any)=>{
         const str=obj[key];
         if(str===undefined || str===null){
@@ -61,9 +81,13 @@ export function makeStrings<
     }
 }
 
-export function convertCompString<T,TId extends keyof StringMap>(
-    strings:StringsCall<T,TId>|undefined,
-    sk:KeyOrKeyAndData<keyof T,TId>|undefined,
+export function convertCompString<
+    T,
+    TSM extends TypeStringMap,
+    TId extends keyof TSM,
+>(
+    strings:StringsCall<T,TSM,TId>|undefined,
+    sk:KeyOrKeyAndData<keyof T,TSM,TId>|undefined,
     fallback:string|null|undefined):string
 {
     const func:any=strings;

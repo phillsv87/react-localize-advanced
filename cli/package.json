@@ -1,7 +1,7 @@
 {
-  "name": "react-localization-advanced",
+  "name": "react-localization-advanced-cli",
   "version": "0.0.1",
-  "description": "",
+  "description": "Tools for localizing React apps",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -13,7 +13,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/node": "^16.11.3",
     "nodemon": "^2.0.14",
