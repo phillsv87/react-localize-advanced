@@ -5,7 +5,7 @@ export type DataArgs<
 >=T extends keyof TSM[TId] ? TSM[TId][T] extends null?[]: [TSM[TId][T]] : [];
 
 export type StringsCall<
-    T,
+    T extends LocalStringMap,
     TSM extends TypeStringMap,
     TId extends keyof TSM
 >=(key:keyof T, ...data:DataArgs<keyof T,TSM,TId>)=>string
@@ -19,7 +19,7 @@ export type KeyOrKeyAndData<
 
 
 export interface LocalCompProps<
-    T,
+    T extends LocalStringMap,
     TSM extends TypeStringMap,
     TId extends keyof TSM
 >
@@ -28,10 +28,11 @@ export interface LocalCompProps<
     sk?:KeyOrKeyAndData<keyof T,TSM,TId>;
 }
 export interface MadeStrings<
+    T extends LocalStringMap,
     TSM extends TypeStringMap,
     TId extends keyof TSM
 >{
-    strings:StringsCall<TSM,TSM,TId>;
+    strings:StringsCall<T,TSM,TId>;
     // Text:(props:LocalTextProps<T,TId>)=>any;
     // Button:(props:LocalButtonProps<T,TId>)=>any;
 }
@@ -50,7 +51,7 @@ export function makeStrings<
     T extends LocalStringMap,
     TSM extends TypeStringMap,
     TId extends keyof TSM
->(id:TId,obj:T):MadeStrings<TSM,TId>{
+>(id:TId,obj:T):MadeStrings<T,TSM,TId>{
     const strings=(key:keyof T,data:any)=>{
         const str=obj[key];
         if(str===undefined || str===null){
@@ -82,7 +83,7 @@ export function makeStrings<
 }
 
 export function convertCompString<
-    T,
+    T extends LocalStringMap,
     TSM extends TypeStringMap,
     TId extends keyof TSM,
 >(

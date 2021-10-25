@@ -1,6 +1,6 @@
 {
   "name": "@iyio/react-localization",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "Tools for localizing React apps",
   "main": "dist/localization.js",
   "types": "dist/localization.d.ts",
@@ -8,7 +8,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsc"
+    "build": "rm -rf dist && tsc"
   },
   "keywords": [],
   "author": "",
