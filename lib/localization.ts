@@ -33,8 +33,6 @@ export interface MadeStrings<
     TId extends keyof TSM
 >{
     strings:StringsCall<T,TSM,TId>;
-    // Text:(props:LocalTextProps<T,TId>)=>any;
-    // Button:(props:LocalButtonProps<T,TId>)=>any;
 }
 
 const varsReg=/([^{]|^){([a-z0-9_:]+)\}/gi
@@ -75,11 +73,7 @@ export function makeStrings<
 
         return str.indexOf('{{')===-1?formatted:formatted.split('{{').join('{');
     }
-    return {
-        strings:strings as any,
-        // Text:props=>LocalText({...props,strings:strings as any}),
-        // Button:props=>LocalButton({...props,strings:strings as any}),
-    }
+    return {strings:strings as any}
 }
 
 export function convertCompString<
