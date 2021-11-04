@@ -1,6 +1,6 @@
 {
   "name": "react-localization-advanced",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Tools for localizing React apps",
   "main": "dist/localization.js",
   "types": "dist/localization.d.ts",
@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "watch": "tsc --watch",
-    "build": "tsc"
+    "build": "tsc",
+    "publish": "npm run build && npm publish"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +22,6 @@
   },
   "dependencies": {
     "react": "^17.0.0",
-    "react-native": "^0.60.0"
+    "react-native": "^0.64.0"
   }
 }
