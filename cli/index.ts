@@ -143,7 +143,6 @@ function processFile(path:string)
 
 }
 
-const keys:string[]=[];
 interface StringEntry
 {
     key:string;
@@ -237,5 +236,23 @@ ${stringVars.join('\n')}
 `)
 
 if(args.metadataOut){
-    fs.writeFileSync(args.metadataOut,JSON.stringify(bundleMap,null,4))
+
+    const keys:string[]=[];
+    const map:{[key:string]:StringEntry}={};
+
+    for(const e in bundleMap){
+        const bundle=bundleMap[e];
+        for(const s in bundle.strings){
+            const str=bundle.strings[s];
+            const key=bundle.id+'::'+str.key;
+            keys.push(key);
+            map[key]=str;
+        }
+    }
+
+    fs.writeFileSync(args.metadataOut,JSON.stringify({
+        keys,
+        map,
+        bundleMap
+    },null,4))
 }

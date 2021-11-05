@@ -1,6 +1,6 @@
 {
   "name": "react-localization-advanced-cli",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Tools for localizing React apps",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -9,7 +9,8 @@
   ],
   "scripts": {
     "cli": "ts-node index.ts",
-    "build": "rm -rf dist && tsc"
+    "build": "tsc",
+    "publish": "npm run build && npm publish"
   },
   "bin": {
     "build-string-map": "dist/index.js"
