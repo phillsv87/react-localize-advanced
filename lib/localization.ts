@@ -2,6 +2,7 @@ import {useEffect, useState} from 'react';
 import { NativeModules, Platform } from 'react-native';
 
 let fallbackLang:string|null=null;
+let showKeysFor:string|null=null;
 
 const deviceLanguage =
       ((Platform.OS === 'ios'
@@ -134,6 +135,12 @@ export function createScopedLocals<
         const idKey=id+'::'+key;
         activeKeys[idKey]=true;
 
+        if(showKeysFor==='*'){
+            return '{'+idKey+'}';
+        }else if(showKeysFor===id){
+            return '{'+key+'}';
+        }
+
         const lookup=keyOverrides[idKey]||currentLookup?.[idKey];
 
         const str=lookup===undefined?obj[key]:lookup;
@@ -179,6 +186,11 @@ export function convertCompString<
 export function getDefaultLocalStringLookup():LocalStringLookup
 {
     return {...defaultLocalStringLookup}
+}
+
+export function getDefaultString(key:string):string|undefined
+{
+    return defaultLocalStringLookup[key];
 }
 
 export type LocalStringLookup={[key:string]:string};
@@ -356,4 +368,14 @@ export async function getLocalActiveKeysAsync():Promise<string[]>
     }
     keys.sort((a,b)=>a.localeCompare(b));
     return keys;
+}
+
+export function setShowKeysFor(showFor:string|null)
+{
+    showKeysFor=showFor;
+    triggerEvent('lookup-changed');
+}
+
+export function getShowKeysFor(){
+    return showKeysFor;
 }

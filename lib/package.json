@@ -1,6 +1,6 @@
 {
   "name": "react-localization-advanced",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Tools for localizing React apps",
   "main": "dist/localization.js",
   "types": "dist/localization.d.ts",
