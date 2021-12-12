@@ -110,7 +110,7 @@ function processDir(path:string)
     }
 }
 
-const makeStringRef=/makeStrings\s*\(\s*['"]([a-zA-Z][\w]*)['"]\s*,\s*\{/g
+const makeStringRef=/makeLocals\s*\(\s*['"]([a-zA-Z][\w]*)['"]\s*,\s*\{/g
 
 function processFile(path:string)
 {
@@ -127,7 +127,7 @@ function processFile(path:string)
         while(true){
 
             if(end===-1){
-                throw new Error('End of makeStrings expected. file='+path)
+                throw new Error('End of makeLocals expected. file='+path)
             }
 
             try{
@@ -165,7 +165,7 @@ const varsReg=/([^{]|^){([a-z0-9_:]+)\}/gi
 function appendStrings(path:string,id:string,strings:{[key:string]:string})
 {
     if(bundleMap[id]){
-        console.warn(`Duplicate makeStrings id. id=${id}, path=${path}`);
+        console.warn(`Duplicate makeLocals id. id=${id}, path=${path}`);
     }
 
     const bundle:StringsBundle=bundleMap[id]={
