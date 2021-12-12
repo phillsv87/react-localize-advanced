@@ -196,29 +196,47 @@ function appendStrings(path:string,id:string,strings:{[key:string]:string})
 
 processDir(args.source);
 
-const stringVars:string[]=[];
+const complexVars:string[]=[];
+const simpleVars:string[]=[];
+let importNotMatch;
 function processStringVars()
 {
     for(const id in bundleMap){
 
+        let complexId=false;
+        let simpleId=false;
+
         const bundle=bundleMap[id];
-        stringVars.push('    '+id+':{');
 
         for(const name in bundle.strings){
             const entry=bundle.strings[name];
             if(entry.vars){
-                stringVars.push('        '+name+':{');
-                for(const varE in entry.vars){
-                    stringVars.push(`            ${varE}:${entry.vars[varE]};`);
+                if(!complexId){
+                    complexId=true;
+                    complexVars.push('    '+id+':{');
                 }
-                stringVars.push('        }');
+                complexVars.push('        '+name+':{');
+                for(const varE in entry.vars){
+                    complexVars.push(`            ${varE}:${entry.vars[varE]};`);
+                }
+                complexVars.push('        }|NotMatch;');
+                importNotMatch=true;
             }else{
-                stringVars.push('        '+name+':null;');
+                if(!simpleId){
+                    simpleId=true;
+                    simpleVars.push('    '+id+':{');
+                }
+                simpleVars.push('        '+name+':true|NotMatch;');
+                importNotMatch=true;
             }
         }
 
-        stringVars.push('    }')
-
+        if(complexId){
+            complexVars.push('    }')
+        }
+        if(simpleId){
+            simpleVars.push('    }')
+        }
 
     }
 }
@@ -229,9 +247,13 @@ fs.writeFileSync(args.out,
 // https://www.npmjs.com/package/react-localization-advanced-cli
 // # Generation command
 // npx build-string-map ${[...process.argv].splice(2).join(' ')}
+${(importNotMatch?'\nimport { NotMatch } from "react-localization-advanced"\n':'')}
+export type SimpleStringMap={
+${simpleVars.join('\n')}
+};
 
-export type StringMap={
-${stringVars.join('\n')}
+export type ComplexStringMap={
+${complexVars.join('\n')}
 }
 `)
 

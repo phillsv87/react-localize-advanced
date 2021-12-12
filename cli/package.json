@@ -1,6 +1,6 @@
 {
   "name": "react-localization-advanced-cli",
-  "version": "0.0.4",
+  "version": "0.5.0",
   "description": "Tools for localizing React apps",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

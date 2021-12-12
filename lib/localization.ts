@@ -12,41 +12,52 @@ const deviceLanguage =
 
 export const getDeviceLanguage=()=>deviceLanguage;
 
-export type DataArgs<
-    T extends string|number|symbol,
-    TSM extends TypeStringMap,
-    TId extends keyof TSM
->=T extends keyof TSM[TId] ? TSM[TId][T] extends null?[]: [TSM[TId][T]] : [];
+export type NotMatch=null|undefined|false|0|'';
 
-export type StringsCall<
+export type LocalizeCall<
     T extends LocalStringMap,
-    TSM extends TypeStringMap,
-    TId extends keyof TSM
->=(key:keyof T, ...data:DataArgs<keyof T,TSM,TId>)=>string
+    CM extends TypeStringMap,
+    CK extends keyof CM
+>=(keyData:KeyOrKeyAndData<keyof T,CM,CK>)=>string
 
 export type KeyOrKeyAndData<
     T,
-    TSM extends TypeStringMap,
-    TId extends keyof TSM
->=T extends keyof TSM[TId] ?
-    TSM[TId][T] extends null ? T : [T,TSM[TId][T]] : T;
+    CM extends TypeStringMap,
+    CK extends keyof CM
+>=(
+    T extends keyof CM[CK]  ? never : T
+|
+    Partial<CM[CK] & MapSimpleKeys<T>> & DataOptions
+)
+
+export type MapSimpleKeys<T> = T extends string ?{
+    [Property in T]: true | NotMatch
+} : never
+
+export type DataOptions = {
+    _default?:string|NotMatch;
+    _override?:string|NotMatch;
+}
 
 
 export interface LocalCompProps<
     T extends LocalStringMap,
-    TSM extends TypeStringMap,
-    TId extends keyof TSM
+    CM extends TypeStringMap,
+    CK extends keyof CM
 >
 {
-    strings?:StringsCall<T,TSM,TId>;
-    sk?:KeyOrKeyAndData<keyof T,TSM,TId>;
+    // Should only be used by template components.
+    _internalConvert?:LocalizeCall<T,CM,CK>;
+
+    // Key or localization map
+    lz?:KeyOrKeyAndData<keyof T,CM,CK>;
 }
-export interface MadeStrings<
+export interface MadeLocals<
     T extends LocalStringMap,
-    TSM extends TypeStringMap,
-    TId extends keyof TSM
+    CM extends TypeStringMap,
+    CK extends keyof CM
 >{
-    strings:StringsCall<T,TSM,TId>;
+    lz:LocalizeCall<T,CM,CK>;
 }
 
 const varsReg=/([^{]|^){([a-z0-9_:]+)\}/gi
@@ -55,7 +66,7 @@ export type LocalStringMap={[name:string]:string}
 
 export type TypeStringMap={
     [id:string]:{
-        [name:string]:any;
+        [name:string]:{}|NotMatch;
     }
 }
 
@@ -78,17 +89,47 @@ const activeKeys:{[key:string]:boolean}={};
 
 const defaultLocalStringLookup:LocalStringLookup={}
 
-export function makeStrings<
+export function createScopedLocals<
     T extends LocalStringMap,
-    TSM extends TypeStringMap,
-    TId extends keyof TSM
->(id:TId,obj:T):MadeStrings<T,TSM,TId>{
+    CM extends TypeStringMap,
+    CK extends keyof CM
+>(id:string,obj:T):MadeLocals<T,CM,CK>{
 
     for(const e in obj){
         defaultLocalStringLookup[id+'::'+e]=obj[e];
     }
 
-    const strings=(key:keyof T,data:any)=>{
+    const lz:LocalizeCall<T,CM,CK>=(keyData)=>{
+
+        let key:string;
+        let data:any;
+        if(typeof keyData === 'string'){
+            key=keyData;
+            data=null;
+        }else if(keyData){
+            const options=keyData as DataOptions;
+            if(options._override){
+                return options._override;
+            }
+            key='';
+            for(const k in keyData){
+                data=keyData[k];
+                if(data){
+                    key=k;
+                    break;
+                }
+            }
+            if(!key){
+                return '';
+            }else if(key==='_default'){
+                return options._default || '';
+            }
+            if(typeof data !== 'object'){
+                data=null;
+            }
+        }else{
+            return '';
+        }
 
         const idKey=id+'::'+key;
         activeKeys[idKey]=true;
@@ -118,20 +159,20 @@ export function makeStrings<
 
         return str.indexOf('{{')===-1?formatted:formatted.split('{{').join('{');
     }
-    return {strings:strings as any}
+    return {lz}
 }
 
 export function convertCompString<
     T extends LocalStringMap,
-    TSM extends TypeStringMap,
-    TId extends keyof TSM,
+    CM extends TypeStringMap,
+    CK extends keyof CM,
 >(
-    strings:StringsCall<T,TSM,TId>|undefined,
-    sk:KeyOrKeyAndData<keyof T,TSM,TId>|undefined,
+    _internalConvert:LocalizeCall<T,CM,CK>|undefined,
+    lz:KeyOrKeyAndData<keyof T,CM,CK>|undefined,
     fallback:string|null|undefined):string
 {
-    const func:any=strings;
-    const s:string|undefined|null=(sk && func)?Array.isArray(sk)?func(sk[0],sk[1]):func(sk):undefined;
+    const func:any=_internalConvert;
+    const s:string|undefined|null=(lz && func)?Array.isArray(lz)?func(lz[0],lz[1]):func(lz):undefined;
     return (s===undefined || s===null)?fallback||'':s;
 }
 
