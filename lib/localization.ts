@@ -135,13 +135,13 @@ export function createScopedLocals<
         const idKey=id+'::'+key;
         activeKeys[idKey]=true;
 
-        if(showKeysFor==='*'){
+        const lookup=keyOverrides[idKey]||currentLookup?.[idKey];
+
+        if(showKeysFor==='*' || (showKeysFor==='*?' && !lookup)){
             return '{'+idKey+'}';
-        }else if(showKeysFor===id){
+        }else if(showKeysFor===id || (showKeysFor===id+'?' && !lookup)){
             return '{'+key+'}';
         }
-
-        const lookup=keyOverrides[idKey]||currentLookup?.[idKey];
 
         const str=lookup===undefined?obj[key]:lookup;
 
